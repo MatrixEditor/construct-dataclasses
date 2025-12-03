@@ -365,6 +365,20 @@ def _process_struct_dataclass(
 
     setattr(new_cls, "parser", ds_struct)
     setattr(new_cls, "struct", ds_struct.subcon)
+
+    if hasattr(new_cls, "build"):
+        raise ValueError(
+            f"Invalid field definition: field 'build' alredy exists in class {new_cls}"
+        )
+
+    if hasattr(new_cls, "parse"):
+        raise ValueError(
+            f"Invalid field definition: field 'parse' alredy exists in class {new_cls}"
+        )
+
+    setattr(new_cls, "build", lambda self: self.parser.build(self))
+    setattr(new_cls, "parse", classmethod(lambda _cls, *args, **kwargs: _cls.parser.parse(*args, **kwargs)))
+
     return new_cls
 
 
