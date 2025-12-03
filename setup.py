@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from setuptools import setup
 
-version_string = "1.1.10"
+version_string = "1.1.11"
 
 setup(
     name="construct-dataclasses",
