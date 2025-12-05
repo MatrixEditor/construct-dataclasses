@@ -20,6 +20,8 @@ import textwrap
 import enum
 import sys
 
+from collections.abc import Mapping
+
 import construct as cs
 
 __all__ = [
@@ -40,6 +42,7 @@ def subcsfield(
     subcon,
     doc: str | None = None,
     parsed=None,
+    metadata: Mapping | None = None,
 ) -> dataclasses.Field:
     """
     Helper method to define `cs.Subconstruct` fields in a dataclass that reference another
@@ -63,6 +66,8 @@ def subcsfield(
     :type model: type
     :param subcon: the sub-construct
     :type subcon: Construct | SubConstruct
+    :param metadata: additional user metadata that is passed on to the dataclass field.
+    :type metadata: Mapping, optional
     :return: the created dataclasses Field
     :rtype: dataclasses.Field
     """
@@ -74,6 +79,7 @@ def subcsfield(
         subcon=subcon,
         doc=doc,
         parsed=parsed,
+        metadata=metadata,
     )
 
 
@@ -84,6 +90,7 @@ def csfield(
     depth=None,
     reverse=False,
     aligned=None,
+    metadata: Mapping | None = None,
 ) -> dataclasses.Field:
     """
     Helper method for :class:`DataclassStruct` and `DataclassBitStruct` to create dataclass
@@ -108,6 +115,8 @@ def csfield(
     :type reverse: bool, optional
     :param aligned: argument for `AlignedStruct` objects, defaults to None
     :type aligned: int, optional
+    :param metadata: additional user metadata that is passed on to the dataclass field.
+    :type metadata: Mapping, optional
     :return: the created dataclasses field instance
     :rtype: dataclasses.Field
 
@@ -135,18 +144,20 @@ def csfield(
         subcon=target_subcon,
         doc=doc,
         parsed=parsed,
+        metadata=metadata,
     )
 
 
 def csenum(
-    model: type, subcon: cs.Construct, doc: str | None = None, parsed=None
+    model: type, subcon: cs.Construct, doc: str | None = None, parsed=None,
+    metadata: Mapping | None = None,
 ) -> dataclasses.Field:
     """Creates an enum field that tries to parse the given enum.
 
     .. warning::
         The returned value may be of type ``int`` if no suitable representation could be found.
     """
-    return _process_csfield(model, cs.Enum(subcon, model), doc=doc, parsed=parsed)
+    return _process_csfield(model, cs.Enum(subcon, model), doc=doc, parsed=parsed, metadata=metadata)
 
 
 def tfield(
@@ -154,12 +165,13 @@ def tfield(
     subcon: cs.Construct,
     doc: str | None = None,
     parsed=None,
+    metadata: Mapping | None = None,
 ) -> dataclasses.Field:
     """Creates a typed field. (instance of model will be returned).
 
     To apply a typed field to dataclasses, use `subcsfield`.
     """
-    return _process_csfield(model, subcon, doc, parsed)
+    return _process_csfield(model, subcon, doc, parsed, metadata=metadata)
 
 
 def _process_csfield(
@@ -171,6 +183,7 @@ def _process_csfield(
     subcon,
     doc: str | None = None,
     parsed=None,
+    metadata: Mapping | None = None,
 ) -> dataclasses.Field:
     target_subcon = subcon
     if (doc is not None) or (parsed is not None):
@@ -193,13 +206,17 @@ def _process_csfield(
         else:
             default = target_subcon.value
 
+    _metadata={
+        "subcon": target_subcon,
+        "subcon_orig_type": model or type(subcon),
+    }
+    if metadata is not None:
+        assert isinstance(metadata, Mapping), "metadata must be a Mapping!"
+        _metadata.update(metadata)
     return dataclasses.field(
         default=default,
         init=init,
-        metadata={
-            "subcon": target_subcon,
-            "subcon_orig_type": model or type(subcon),
-        },
+        metadata=_metadata,
     )
 
 
