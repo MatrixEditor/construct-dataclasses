@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from setuptools import setup
 
-version_string = "1.1.11"
+version_string = "1.1.12"
 
 setup(
     name="construct-dataclasses",
@@ -55,5 +55,7 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
     ],
 )
