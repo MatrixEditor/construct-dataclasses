@@ -18,6 +18,9 @@ setup(
     author="MatrixEditor",
     python_requires=">=3.8",
     install_requires=["construct"],
+    extras_require={
+        "dev": ["pytest"],
+    },
     keywords=[
         "construct",
         "kaitai",

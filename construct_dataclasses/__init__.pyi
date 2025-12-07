@@ -15,11 +15,13 @@
 import construct as cs
 import dataclasses
 import typing as t
+import collections.abc
 
 from construct.core import Context, ContextKWType, FilenameType, PathType, StreamType
 
 def subcsfield(
-    model: type, subcon, doc: str | None = ..., parsed: cs.Context | None = ...
+    model: type, subcon, doc: str | None = ..., parsed: cs.Context | None = ...,
+    metadata: collections.abc.Mapping | None = ...,
 ) -> dataclasses.Field: ...
 def csfield(
     subcon: cs.Construct | type,
@@ -28,18 +30,21 @@ def csfield(
     depth: int | None = ...,
     reverse: bool = ...,
     aligned: int | None = ...,
+    metadata: collections.abc.Mapping | None = ...,
 ) -> dataclasses.Field: ...
 def tfield(
     model: type,
     subcon: cs.Construct,
     doc: str | None = ...,
     parsed: cs.Context | None = ...,
+    metadata: collections.abc.Mapping | None = ...,
 ) -> dataclasses.Field: ...
 def csenum(
     model: type,
     subcon: cs.Construct,
     doc: str | None = None,
     parsed: cs.Context | None = None,
+    metadata: collections.abc.Mapping | None = ...,
 ) -> dataclasses.Field: ...
 def to_struct(
     model: type,
